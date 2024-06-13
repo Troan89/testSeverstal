@@ -8,8 +8,8 @@ import {useFormik} from "formik";
 import {Product} from "../../../types/types.ts";
 import {format} from 'date-fns';
 
-const formatDate = (date: any) => {
-    return format(date, 'yyyy-MM-dd HH:mm:ss')
+const formatDate = (date: unknown) => {
+    return format(date as Date, 'yyyy-MM-dd HH:mm:ss')
 };
 
 const validationForm = Yup.object().shape({
@@ -27,7 +27,7 @@ const validationForm = Yup.object().shape({
         .min(5, 'Минимум 5 символов')
         .required('Required'),
     phone_number: Yup.string()
-        .min(8, 'Минимум 8 символов')
+        .min(8, 'Минимум 11 символов')
         .required('Required'),
     // total_cost: Yup.number()
     //     .min(1, 'Минимум 1 символ')
@@ -69,7 +69,7 @@ export const CreateOrder = () => {
                 .reduce((acc:number, el:Product): number => acc + el.price, 0)
 
             dispatch(addOrder({
-                id: +v1(),
+                id: parseInt(v1().substring(0, 8), 16),
                 order_id: values.order_id,
                 order_date: formatDate(values.order_date),
                 expire_date: formatDate(values.expire_date),
@@ -106,10 +106,9 @@ export const CreateOrder = () => {
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    backgroundColor: "#dacece",
+                    backgroundColor: "#f6efef",
                     p: 2,
                     width: 600,
-                    color: 'white',
                     padding: '20px',
                 }}>
                     <form onSubmit={formik.handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
@@ -151,7 +150,7 @@ export const CreateOrder = () => {
                         {/*{formik.errors.total_cost && <div style={{color: 'red'}}>{formik.errors.total_cost}</div>}*/}
 
                         <div>
-                            <Button  onClick={handleClose}>Закрыть</Button>
+                            <Button  onClick={handleClose}>Отмена</Button>
                             <Button type={'submit'}>Добавить</Button>
                         </div>
                     </form>

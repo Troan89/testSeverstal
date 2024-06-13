@@ -1,30 +1,35 @@
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {InitialState, Order} from "../types/types.ts";
 
-const SET_DATA = 'SET_DATA'
-const ADD_ORDER = 'ADD_ORDER'
 
-type Action =
-    SetData
-    | AddOrder
+const initialState: InitialState = {
+    orders: [],
+    products: [],
+    order_statuses: []
+}
 
-export const reducer = (state: InitialState, action: Action): InitialState => {
-    switch (action.type) {
-        case SET_DATA:
-            return{...state, orders: action.data.orders, products: action.data.products, order_statuses: action.data.order_statuses}
-        case ADD_ORDER:
-            return {...state, orders: [action.data, ...state.orders]}
-        default:
-            return state;
+export const ordersSlice = createSlice({
+    name: 'orders',
+    initialState,
+    reducers: {
+        setOrders(state, action: PayloadAction<InitialState>){
+            const { orders, products, order_statuses } = action.payload;
+            state.orders = orders;
+            state.products = products;
+            state.order_statuses = order_statuses;
+        },
+        addOrder(state, action: PayloadAction<Order>){
+            state.orders.unshift(action.payload)
+        },
+        editOrder(state, action:PayloadAction<{status_id:number, expire_date:string, id:number}>){
+            const index = state.orders.findIndex(order => order.id === action.payload.id);
+            if (index !== -1) {
+                state.orders[index].status_id = action.payload.status_id;
+                state.orders[index].expire_date = action.payload.expire_date;
+            }
+        }
     }
-};
+})
 
-export const setData = (data:InitialState) => ({
-    type: SET_DATA, data
-}  as const)
-export const addOrder = (data:Order) => ({
-    type: ADD_ORDER, data
-}  as const)
-
-
-export type SetData = ReturnType<typeof setData>
-export type AddOrder = ReturnType<typeof addOrder>
+export const {setOrders,addOrder, editOrder} = ordersSlice.actions
+export const ordersReducer = ordersSlice.reducer

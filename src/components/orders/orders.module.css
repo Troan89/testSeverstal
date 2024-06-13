@@ -1,13 +1,15 @@
 @import url('../../index.css');
 
-.products {
+.orders {
     margin: 50px 100px;
 }
 
-.products_text {
+.orders_text {
     align-items: center;
     margin-bottom: 50px;
     font-weight: 700;
+    display: flex;
+    flex-direction: column;
     h2 {
         font-weight: 700;
         text-align: center;
@@ -15,14 +17,17 @@
     }
 }
 
+.orders_text > div:nth-child(2) {
+    margin: 0 auto;
+}
+
+.orders_text > div:nth-child(3) {
+    align-self: flex-end;
+}
+
 .table {
     table-layout: fixed;
     width: 100%;
-}
-
-.tableContainer {
-    /*max-height: 400px;*/
-    /*overflow: auto;*/
 }
 
 .tableHead {
@@ -33,3 +38,14 @@
     border: 2px solid rgb(122, 115, 115);
     align-items: start;
 }
+
+.sortIconUp {
+    width: 20px;
+    height: 20px;
+}
+
+.sortIconDown {
+    width: 20px;
+    height: 20px;
+}
+

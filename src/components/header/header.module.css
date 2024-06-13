@@ -1,0 +1,33 @@
+@import url('../../index.css');
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 50px;
+    display: flex;
+    padding-left: 30px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    gap: 50px;
+    justify-content: flex-start;
+    background-color: var(--primary-color);
+    box-sizing: border-box;
+    img {
+        height: 35px;
+        border-radius: 99999px  ;
+    }
+
+}
+
+.nav {
+    display: flex;
+    gap: 30px;
+    a {
+        color: var(--secondary-color);
+    }
+
+
+}

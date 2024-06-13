@@ -1,85 +1,65 @@
 import {ChangeEvent, useState} from "react";
 import {Box, Button, FormControl, InputLabel, MenuItem, Modal, Select, TextField} from "@mui/material";
 import {useAppDispatch, useAppSelector} from "../../../reducer/store.ts";
-import {addOrder} from "../../../reducer/ordersSlice.ts";
-import {v1} from "uuid";
+import {editOrder} from "../../../reducer/ordersSlice.ts";
 import * as Yup from 'yup';
 import {useFormik} from "formik";
-import {Product} from "../../../types/types.ts";
 import {format} from 'date-fns';
+import edit from '../../../assets/edit.png'
+import s from '../orders.module.css'
 
-const formatDate = (date: any) => {
-    return format(date, 'yyyy-MM-dd HH:mm:ss')
+const formatDate = (date: unknown) => {
+    return format(date as Date, 'yyyy-MM-dd HH:mm:ss')
 };
 
 const validationForm = Yup.object().shape({
-    order_id: Yup.string()
-        .min(1, 'Минимум 1 символа')
-        .required('Required'),
-    order_date: Yup.date()
-        .required('Required'),
     expire_date: Yup.date()
         .required('Required'),
-    // status_id: Yup.number()
-    //     .min(1, 'Минимум 1 символ')
-    //     .required('Required'),
-    customer_name: Yup.string()
-        .min(5, 'Минимум 5 символов')
+    status_id: Yup.number()
+        .min(1, 'Минимум 1 символ')
         .required('Required'),
-    phone_number: Yup.string()
-        .min(8, 'Минимум 8 символов')
-        .required('Required'),
-    // total_cost: Yup.number()
-    //     .min(1, 'Минимум 1 символ')
-    //     .required('Required'),
 })
 
-export const CreateOrder = () => {
+type Props = {
+    orderId:number
+}
+
+export const EditOrder = ({orderId}:Props) => {
+
     const dispatch = useAppDispatch()
 
-    const products = useAppSelector(state=>state.orders.products)
+    const order = useAppSelector(state=>state.orders.orders.find(order=>order.id === orderId))
+    const status = useAppSelector(state=>state.orders.order_statuses)
 
-    const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+    let draftStatus = ''
+    status.forEach(el=>el.id === order?.status_id ? draftStatus = el.name : '')
+
+    const [selectedStatus, setSelectedStatus] = useState<string>(draftStatus);
     const [openSelect, setOpenSelect] = useState(false);
-    const handleProductChange = (event:ChangeEvent<{ value: unknown }>) => {
-        const selectedProductIds = event.target.value as number[];
-        setSelectedProducts(selectedProductIds);
-        formik.setFieldValue('products', selectedProductIds.join(' '));
+
+    const handleStatusChange = (event:ChangeEvent<HTMLInputElement>) => {
+        if (event.target.value) {
+            setSelectedStatus(event.target.value)
+            setOpenSelect(false)
+            formik.setFieldValue('status_id', status.find(s => s.name === event.target.value)?.id);
+        }
     };
 
     const formik = useFormik({
         initialValues: {
-            order_id: '',
-            order_date: '',
-            expire_date: '',
-            // status_id: 1,
-            customer_name: '',
-            phone_number: '+7',
-            products: [],
-            // total_cost: 0
-
+            expire_date: order?.expire_date,
+            status_id: order?.status_id,
         },
         validationSchema: validationForm,
         onSubmit: (values) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            const newProducts = values.products.split(' ').map(el=>+el)
-            const newTotalCost = products
-                .filter(product=> newProducts.includes(product.article))
-                .reduce((acc:number, el:Product): number => acc + el.price, 0)
+            if (order) {
+                dispatch(editOrder({
+                    id: order.id,
+                    expire_date: formatDate(values.expire_date),
+                    status_id: values.status_id!,
+                }))
+            }
 
-            dispatch(addOrder({
-                id: +v1(),
-                order_id: values.order_id,
-                order_date: formatDate(values.order_date),
-                expire_date: formatDate(values.expire_date),
-                status_id: 1,
-                customer_name: values.customer_name,
-                phone_number: values.phone_number,
-                products: newProducts,
-                total_cost: newTotalCost,
-                quantity: newProducts.length
-            }))
             handleClose();
         }
     })
@@ -93,10 +73,9 @@ export const CreateOrder = () => {
     const handleClose = () => {
         setOpen(false);
     };
-
     return (
         <div>
-            <Button onClick={handleOpen}>Добавить Заказ</Button>
+            <img src={edit} alt="" onClick={handleOpen} className={s.sortIconUp}/>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -106,58 +85,46 @@ export const CreateOrder = () => {
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    backgroundColor: "#dacece",
+                    backgroundColor: "#f6efef",
                     p: 2,
                     width: 600,
                     color: 'white',
                     padding: '20px',
                 }}>
-                    <form onSubmit={formik.handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
-                        <TextField label="Номер заказа" fullWidth {...formik.getFieldProps('order_id')}/>
-                        {formik.errors.order_id && <div style={{color: 'red'}}>{formik.errors.order_id}</div>}
-                        {/*<TextField label="Список товаров" fullWidth multiline rows={4} {...formik.getFieldProps('products')}/>*/}
+                    <form onSubmit={formik.handleSubmit}
+                          style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
+                        <TextField type='datetime-local' label="Хранение до"
+                                   fullWidth {...formik.getFieldProps('expire_date')}/>
+                        {formik.errors.expire_date && <div style={{color: 'red'}}>{formik.errors.expire_date}</div>}
                         <FormControl fullWidth>
-                            <InputLabel id="select-multiple-products-label">Выберите товары</InputLabel>
+                            <InputLabel id="select-multiple-products-label">Выберите статус</InputLabel>
                             <Select
                                 labelId="select-multiple-products-label"
                                 id="select-multiple-products"
-                                multiple
-                                value={selectedProducts}
-                                onChange={handleProductChange}
+                                value={selectedStatus}
+                                onChange={handleStatusChange}
                                 open={openSelect}
                                 // onClose={() => setOpenSelect(false)}
                                 onOpen={() => setOpenSelect(true)}
                             >
-                                {products.map((product) => (
-                                    <MenuItem key={product.id} value={product.article}>
-                                        {product.name}
+                                {status.map((status) => (
+                                    <MenuItem key={status.id} value={status.name}>
+                                        {status.name}
                                     </MenuItem>
                                 ))}
                                 <Button onClick={() => setOpenSelect(false)}>Закрыть</Button>
                             </Select>
                         </FormControl>
-                        {formik.errors.products?.length === 0 && <div style={{color: 'red'}}>{formik.errors.products}</div>}
-                        <TextField type='datetime-local' label="Дата оформления" fullWidth {...formik.getFieldProps('order_date')}/>
-                        {formik.errors.order_date && <div style={{color: 'red'}}>{formik.errors.order_date}</div>}
-                        <TextField type='datetime-local' label="Хранение до" fullWidth {...formik.getFieldProps('expire_date')}/>
-                        {formik.errors.expire_date && <div style={{color: 'red'}}>{formik.errors.expire_date}</div>}
-                        {/*<TextField label="Статус заказа" fullWidth {...formik.getFieldProps('status_id')}/>*/}
-                        {/*{formik.errors.status_id && <div style={{color: 'red'}}>{formik.errors.status_id}</div>}*/}
-                        <TextField label="ФИО клиента" fullWidth {...formik.getFieldProps('customer_name')}/>
-                        {formik.errors.customer_name && <div style={{color: 'red'}}>{formik.errors.customer_name}</div>}
-                        <TextField label="Номер телефона" fullWidth {...formik.getFieldProps('phone_number')}/>
-                        {formik.errors.phone_number && <div style={{color: 'red'}}>{formik.errors.phone_number}</div>}
-                        {/*<TextField label="Стоимость" fullWidth {...formik.getFieldProps('total_cost')}/>*/}
-                        {/*{formik.errors.total_cost && <div style={{color: 'red'}}>{formik.errors.total_cost}</div>}*/}
+                        {formik.errors.status_id?.length === 0 && <div style={{color: 'red'}}>{formik.errors.status_id}</div>}
 
                         <div>
-                            <Button  onClick={handleClose}>Закрыть</Button>
-                            <Button type={'submit'}>Добавить</Button>
+                            <Button onClick={handleClose}>Отмена</Button>
+                            <Button type={'submit'}>Сохранить</Button>
                         </div>
                     </form>
 
                 </Box>
             </Modal>
         </div>
-);
+    );
 };

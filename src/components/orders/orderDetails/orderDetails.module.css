@@ -1,0 +1,41 @@
+.wrapper {
+    margin: 50px 100px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu_buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.menu_text {
+    margin-bottom: 50px;
+    font-weight: 700;
+    h2 {
+        font-weight: 700;
+        text-align: center;
+        padding-top: 30px;
+    }
+}
+
+.stepProgressBar {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 15px;
+    align-items: center;
+}
+
+.step {
+    color: #747373;
+}
+
+.active {
+    color: #ffffff;
+    font-weight: 700;
+}
