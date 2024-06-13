@@ -37,7 +37,7 @@ export const EditOrder = ({orderId}:Props) => {
     const [selectedStatus, setSelectedStatus] = useState<string>(draftStatus);
     const [openSelect, setOpenSelect] = useState(false);
 
-    const handleStatusChange = (event:ChangeEvent<HTMLInputElement>) => {
+    const handleStatusChange = (event:SelectChangeEvent<string>) => {
         if (event.target.value) {
             setSelectedStatus(event.target.value)
             setOpenSelect(false)
