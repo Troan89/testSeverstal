@@ -8,7 +8,7 @@ import {useFormik} from "formik";
 import {Product} from "../../../types/types.ts";
 import {format} from 'date-fns';
 
-const formatDate = (date: unknown) => {
+const formatDate = (date: any) => {
     return format(date as Date, 'yyyy-MM-dd HH:mm:ss')
 };
 
