@@ -8,7 +8,7 @@ import {useFormik} from "formik";
 import {Product} from "../../../types/types.ts";
 import {format} from 'date-fns';
 
-const formatDate = (date: any) => {
+const formatDate = (date: unknown) => {
     return format(date as Date, 'yyyy-MM-dd HH:mm:ss')
 };
 
@@ -41,7 +41,7 @@ export const CreateOrder = () => {
 
     const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
     const [openSelect, setOpenSelect] = useState(false);
-    const handleProductChange = (event:ChangeEvent<{ value: unknown }>) => {
+    const handleProductChange = (event:SelectChangeEvent<number[]>) => {
         const selectedProductIds = event.target.value as number[];
         setSelectedProducts(selectedProductIds);
         formik.setFieldValue('products', selectedProductIds.join(' '));
