@@ -1,0 +1,35 @@
+@import url('../../index.css');
+
+.products {
+    margin: 50px 100px;
+}
+
+.products_text {
+    align-items: center;
+    margin-bottom: 50px;
+    font-weight: 700;
+    h2 {
+        font-weight: 700;
+        text-align: center;
+        padding-top: 30px;
+    }
+}
+
+.table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.tableContainer {
+    /*max-height: 400px;*/
+    /*overflow: auto;*/
+}
+
+.tableHead {
+    background-color: var(--secondary-color);
+}
+
+.tableCall {
+    border: 2px solid rgb(122, 115, 115);
+    align-items: start;
+}
